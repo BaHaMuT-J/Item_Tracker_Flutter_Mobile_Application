@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Category {
-  final String name;
-  final List<String> children;
+  String name;
+  List<String> children;
 
   Category({required this.name, required this.children});
 }
@@ -50,7 +50,7 @@ class DeleteButton extends StatelessWidget {
     super.key,
     required this.title,
     required this.itemToDelete,
-    this.onTap
+    this.onTap,
   });
 
   final String title;
@@ -70,58 +70,79 @@ class DeleteButton extends StatelessWidget {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: weakOrangeColor,
-            title: Text(
-              title,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w600,
-                color: brownColor,
+            contentPadding: const EdgeInsets.all(24),
+            content: SizedBox(
+              width: 400,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: brownColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Are you sure you want to delete '$itemToDelete'?",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: brownColor,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: brownColor,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      TextButton(
+                        onPressed: () {
+                          onTap?.call();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        child: const Text(
+                          "Delete",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            content: Text(
-              "Are you sure you want to delete '${itemToDelete}' ?",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: brownColor,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                    backgroundColor: Colors.white
-                ),
-                child: Text(
-                  "cancel",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: brownColor,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: onTap,
-                style: TextButton.styleFrom(
-                    backgroundColor: Colors.white
-                ),
-                child: Text(
-                  "delete",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.redAccent,
-                  ),
-                ),
-              ),
-            ],
           ),
         );
       },
     );
   }
 }
+
 
 const brownColor = Color(0xFF7b4019);
 const orangeColor = Color(0xFFFF7D29);

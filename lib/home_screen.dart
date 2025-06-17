@@ -89,14 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: Image.asset(
-                            'assets/pencil.png',
-                            width: 30,
-                            height: 30,
-                          ),
-                          onPressed: () {
-                            // Handle edit action
+                        RenameCategoryButton(
+                          oldName: category.name,
+                          onRename: (newName) {
+                            setState(() {
+                              category.name = newName;
+                            });
                           },
                         ),
                         DeleteButton(
@@ -160,6 +158,126 @@ class AddCategoryButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class RenameCategoryButton extends StatelessWidget {
+  final String oldName;
+  final ValueChanged<String> onRename;
+  final maxNameLength = 10;
+
+  const RenameCategoryButton({
+    super.key,
+    required this.oldName,
+    required this.onRename,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Image.asset(
+        'assets/pencil.png',
+        width: 30,
+        height: 30,
+      ),
+      onPressed: () {
+        final TextEditingController controller = TextEditingController(text: oldName);
+        final ValueNotifier<String?> errorText = ValueNotifier(null);
+
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: weakOrangeColor,
+            contentPadding: const EdgeInsets.all(24),
+            content: SizedBox(
+              width: 400,
+              child: ValueListenableBuilder<String?>(
+                valueListenable: errorText,
+                builder: (context, error, _) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Rename category '$oldName'",
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: brownColor,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller,
+                      maxLength: maxNameLength,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: "Enter new category name",
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText: "",
+                        errorText: error,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: brownColor,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          ),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: brownColor,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        TextButton(
+                          onPressed: () {
+                            final newName = controller.text.trim();
+                            final valid = RegExp(r'^[a-zA-Z0-9_-]{1,10}$');
+
+                            if (newName.isEmpty) {
+                              errorText.value = "Name can't be empty";
+                            } else if (!valid.hasMatch(newName)) {
+                              errorText.value = "Only letters, numbers, - and _ allowed (max $maxNameLength)";
+                            } else {
+                              onRename(newName);
+                              Navigator.pop(context);
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          ),
+                          child: const Text(
+                            "Rename",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: orangeColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
