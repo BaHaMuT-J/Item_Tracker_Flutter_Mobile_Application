@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:item_tracker/colors.dart';
-
-class Category {
-  final String name;
-  final List<String> children;
-
-  Category({required this.name, required this.children});
-}
+import 'package:item_tracker/category_screen.dart';
+import 'package:item_tracker/constant.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,57 +52,69 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSpacing: 16,
           childAspectRatio: 2,
           children: [
-            ...categories.map((category) {
-              return Card(
-                color: creamColor,
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          category.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: brownColor,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Image.asset(
-                          'assets/pencil.png',
-                          width: 30,
-                          height: 30,
-                        ),
-                        onPressed: () {
-                          // Handle edit action
-                        },
-                      ),
-                      IconButton(
-                        icon: Image.asset(
-                          'assets/bin.png',
-                          width: 30,
-                          height: 30,
-                        ),
-                        onPressed: () {
-                          // Handle delete action
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-            CreateCardButton(
+            AddCategoryButton(
               onTap: () {
                 // Handle add new category
               },
             ),
+            ...categories.map((category) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CategoryScreen(category: category),
+                    ),
+                  ).then((_) {
+                    setState(() {});
+                  });
+                },
+                child: Card(
+                  color: creamColor,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            category.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: brownColor,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Image.asset(
+                            'assets/pencil.png',
+                            width: 30,
+                            height: 30,
+                          ),
+                          onPressed: () {
+                            // Handle edit action
+                          },
+                        ),
+                        DeleteButton(
+                          title: "Delete Category",
+                          itemToDelete: category.name,
+                          onTap: () {
+                            setState(() {
+                              categories.remove(category);
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -116,11 +122,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Custom widget for dashed border card
-class CreateCardButton extends StatelessWidget {
+class AddCategoryButton extends StatelessWidget {
   final VoidCallback? onTap;
 
-  const CreateCardButton({super.key, this.onTap});
+  const AddCategoryButton({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -157,42 +162,4 @@ class CreateCardButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class CreateCardPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = brownColor
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    const dashWidth = 5.0;
-    const dashSpace = 5.0;
-
-    final path = Path();
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    final radius = Radius.circular(12);
-
-    // Draw rounded rect path
-    path.addRRect(RRect.fromRectAndRadius(rect, radius));
-
-    // Use PathMetrics to dash the path
-    final metrics = path.computeMetrics();
-
-    for (final metric in metrics) {
-      double distance = 0.0;
-      while (distance < metric.length) {
-        final length = dashWidth;
-        canvas.drawPath(
-          metric.extractPath(distance, distance + length),
-          paint,
-        );
-        distance += dashWidth + dashSpace;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

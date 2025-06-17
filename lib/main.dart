@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:item_tracker/colors.dart';
 import 'package:item_tracker/home_screen.dart';
 
 void main() => runApp(const MyApp());
