@@ -1,16 +1,18 @@
-# item_tracker
+# Item Tracker
 
-A new Flutter project.
+Simple item tracker mobile app built with Flutter. User can create new categories, and items in each category to keep track of item they have or want.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Add new category
+- Rename category
+- Delete category
+- Reorder category
+- Add new item
+- Delete item
+- Reorder item
+- Shared preferences to keep data across session
 
-A few resources to get you started if this is your first Flutter project:
+## UI Flow Demo
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://www.figma.com/proto/4lOSzksRfMzPBVwcWOI57j/Item-Tracker-MobileDev?node-id=31-771&p=f&t=anV775cu24hUg7qc-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=31%3A771

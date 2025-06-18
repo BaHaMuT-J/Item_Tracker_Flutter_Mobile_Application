@@ -265,7 +265,7 @@ class RenameCategoryButton extends StatelessWidget {
       onPressed: () {
         showTextFieldDialog(
           context: context,
-          title: "Rename category '$oldName'",
+          title: "Rename Category '$oldName'",
           initialValue: oldName,
           confirmLabel: "Rename",
           onConfirm: onRename,
