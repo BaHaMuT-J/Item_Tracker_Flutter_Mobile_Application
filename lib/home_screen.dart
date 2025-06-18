@@ -3,7 +3,7 @@ import 'package:item_tracker/CreateCardPainter.dart';
 import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/category_screen.dart';
 import 'package:item_tracker/constant.dart';
-import 'package:item_tracker/showDialog.dart';
+import 'package:item_tracker/showTextFieldDialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -135,7 +135,6 @@ class AddCategoryButton extends StatelessWidget {
 
   final String title;
   final ValueChanged<String> onAdd;
-  final maxNameLength = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +184,6 @@ class AddCategoryButton extends StatelessWidget {
 class RenameCategoryButton extends StatelessWidget {
   final String oldName;
   final ValueChanged<String> onRename;
-  final maxNameLength = 10;
 
   const RenameCategoryButton({
     super.key,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:item_tracker/CreateCardPainter.dart';
 import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/constant.dart';
-import 'package:item_tracker/showDialog.dart';
+import 'package:item_tracker/showTextFieldDialog.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({
@@ -59,12 +59,20 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView.separated(
+              child: ReorderableListView.builder(
                 itemCount: children.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                buildDefaultDragHandles: false,
+                proxyDecorator: (child, index, animation) {
+                  return Material(
+                    color: Colors.transparent,
+                    elevation: 16,
+                    child: child,
+                  );
+                },
                 itemBuilder: (context, index) {
                   final item = children[index];
                   return Card(
+                    key: ValueKey(item),
                     color: creamColor,
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -74,6 +82,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       child: Row(
                         children: [
+                          ReorderableDragStartListener(
+                            index: index,
+                            child: const Icon(
+                              Icons.drag_handle,
+                              color: brownColor,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               item,
@@ -86,7 +102,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           ),
                           DeleteButton(
                             title: "Delete Item",
-                            itemToDelete: widget.category.children[index],
+                            itemToDelete: item,
                             onTap: () {
                               setState(() {
                                 children.removeAt(index);
@@ -99,6 +115,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       ),
                     ),
                   );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) newIndex -= 1;
+                    final item = children.removeAt(oldIndex);
+                    children.insert(newIndex, item);
+                    widget.category.children
+                      ..removeAt(oldIndex)
+                      ..insert(newIndex, item);
+                  });
                 },
               ),
             ),
@@ -118,7 +144,6 @@ class AddItemButton extends StatelessWidget {
 
   final String title;
   final ValueChanged<String> onAdd;
-  final maxNameLength = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +154,7 @@ class AddItemButton extends StatelessWidget {
           title: title,
           confirmLabel: "Add",
           onConfirm: onAdd,
-          isCategory: false
+          isCategory: false,
         );
       },
       child: CustomPaint(

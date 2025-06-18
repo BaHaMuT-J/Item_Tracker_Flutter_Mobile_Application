@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:item_tracker/constant.dart';
 
+final maxCategoryNameLength = 10;
+final maxItemNameLength = 20;
+
 void showTextFieldDialog({
   required BuildContext context,
   required String title,
@@ -8,11 +11,11 @@ void showTextFieldDialog({
   required String confirmLabel,
   required ValueChanged<String> onConfirm,
   required bool isCategory,
-  int maxNameLength = 10,
 }) {
+  final int maxNameLength = isCategory ? maxCategoryNameLength : maxItemNameLength;
   final TextEditingController controller = TextEditingController(text: initialValue);
   final ValueNotifier<String?> errorText = ValueNotifier(null);
-  final valid = RegExp(r'^[a-zA-Z0-9_-]{1,10}$');
+  final valid = RegExp('^[a-zA-Z0-9_-]{1,$maxNameLength}\$');
 
   showDialog(
     context: context,
