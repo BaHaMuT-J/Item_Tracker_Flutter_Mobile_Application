@@ -10,4 +10,14 @@ class Category {
   List<String> children;
 
   Category({required this.name, required this.children});
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'children': children,
+  };
+
+  static Category fromJson(Map<String, dynamic> json) => Category(
+    name: json['name'],
+    children: List<String>.from(json['children']),
+  );
 }

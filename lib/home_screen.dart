@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:item_tracker/AddItemButton.dart';
 import 'package:item_tracker/CreateCardPainter.dart';
@@ -5,6 +7,7 @@ import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/category_screen.dart';
 import 'package:item_tracker/constant.dart';
 import 'package:item_tracker/showTextFieldDialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +24,31 @@ class _HomeScreenState extends State<HomeScreen> {
     Category(name: "Model", children: ["Luffy Gear 4th"]),
     Category(name: "Lego", children: []),
   ];
+
+  Future<void> saveCategories() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String> newCategoriesJson = categories.map((c) => jsonEncode(c.toJson())).toList();
+    await prefs.setStringList('categories', newCategoriesJson);
+  }
+
+  Future<void> loadCategories() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String>? categoriesJson = prefs.getStringList('categories');
+
+    if (categoriesJson != null) {
+      setState(() {
+        categories = categoriesJson
+            .map((category) => Category.fromJson(jsonDecode(category)))
+            .toList();
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   categories.insert(0, Category(name: newName, children: []));
                 });
+                saveCategories();
               },
               isCategory: true,
             ),
@@ -95,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(
                           builder: (context) => CategoryScreen(category: category),
                         ),
-                      ).then((_) => setState(() {})),
+                      ).then((_) => saveCategories()),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Row(
@@ -123,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               oldName: category.name,
                               onRename: (newName) {
                                 setState(() => category.name = newName);
+                                saveCategories();
                               },
                             ),
                             DeleteButton(
@@ -130,9 +160,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemToDelete: category.name,
                               onTap: () {
                                 setState(() => categories.removeAt(index));
+                                saveCategories();
                                 Navigator.pop(context);
                               },
                             ),
+                            Icon(Icons.chevron_right, color: Colors.grey),
                           ],
                         ),
                       ),
@@ -145,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final moved = categories.removeAt(oldIndex);
                     categories.insert(newIndex, moved);
                   });
+                  saveCategories();
                 },
               ),
             ),
