@@ -57,6 +57,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   widget.category.children.insert(0, newName);
                 });
               },
+              isCategory: false,
             ),
             const SizedBox(height: 16),
             Expanded(

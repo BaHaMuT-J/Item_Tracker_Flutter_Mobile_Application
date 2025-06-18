@@ -15,7 +15,7 @@ void showTextFieldDialog({
   final int maxNameLength = isCategory ? maxCategoryNameLength : maxItemNameLength;
   final TextEditingController controller = TextEditingController(text: initialValue);
   final ValueNotifier<String?> errorText = ValueNotifier(null);
-  final valid = RegExp('^[a-zA-Z0-9_-]{1,$maxNameLength}\$');
+  final valid = RegExp('^[a-zA-Z0-9 _-]{1,$maxNameLength}\$');
 
   showDialog(
     context: context,
@@ -38,21 +38,35 @@ void showTextFieldDialog({
                 ),
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: controller,
-                maxLength: maxNameLength,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: "Enter new ${isCategory ? "category" : "item"} name",
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  counterText: "",
-                  errorText: error,
-                ),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: brownColor,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: controller,
+                    maxLength: maxNameLength,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: "Enter new ${isCategory ? "category" : "item"} name",
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      counterText: "",
+                      errorText: null, // we show error manually
+                    ),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: brownColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  if (error != null)
+                    Text(
+                      error,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.red,
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(height: 8),
               Row(
@@ -62,18 +76,20 @@ void showTextFieldDialog({
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: brownColor,
+                    child: const FittedBox(
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: brownColor,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   TextButton(
                     onPressed: () {
                       final newName = controller.text.trim();
@@ -89,14 +105,16 @@ void showTextFieldDialog({
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
-                    child: Text(
-                      confirmLabel,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: orangeColor,
+                    child: FittedBox(
+                      child: Text(
+                        confirmLabel,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: orangeColor,
+                        ),
                       ),
                     ),
                   ),

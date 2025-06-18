@@ -66,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   categories.insert(0, Category(name: newName, children: []));
                 });
               },
+              isCategory: true,
             ),
             const SizedBox(height: 16),
             Expanded(

@@ -8,10 +8,12 @@ class AddItemButton extends StatelessWidget {
     super.key,
     required this.title,
     required this.onAdd,
+    required this.isCategory,
   });
 
   final String title;
   final ValueChanged<String> onAdd;
+  final bool isCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class AddItemButton extends StatelessWidget {
           title: title,
           confirmLabel: "Add",
           onConfirm: onAdd,
-          isCategory: false,
+          isCategory: isCategory,
         );
       },
       child: CustomPaint(

@@ -58,32 +58,36 @@ class DeleteButton extends StatelessWidget {
                         onPressed: () => Navigator.pop(context),
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: brownColor,
+                        child: const FittedBox(
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: brownColor,
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                       TextButton(
                         onPressed: () {
                           onTap?.call();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
-                        child: const Text(
-                          "Delete",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.redAccent,
+                        child: const FittedBox(
+                          child: Text(
+                            "Delete",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.redAccent,
+                            ),
                           ),
                         ),
                       ),
