@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:item_tracker/CreateCardPainter.dart';
+import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/constant.dart';
+import 'package:item_tracker/showDialog.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({
@@ -46,8 +49,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Column(
           children: [
             AddItemButton(
-              onTap: () {
-                // Later logic
+              title: "Add New Item",
+              onAdd: (newName) {
+                setState(() {
+                  children.insert(0, newName);
+                  widget.category.children.insert(0, newName);
+                });
               },
             ),
             const SizedBox(height: 16),
@@ -103,14 +110,28 @@ class _CategoryScreenState extends State<CategoryScreen> {
 }
 
 class AddItemButton extends StatelessWidget {
-  const AddItemButton({super.key, this.onTap});
+  const AddItemButton({
+    super.key,
+    required this.title,
+    required this.onAdd,
+  });
 
-  final VoidCallback? onTap;
+  final String title;
+  final ValueChanged<String> onAdd;
+  final maxNameLength = 10;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        showTextFieldDialog(
+          context: context,
+          title: title,
+          confirmLabel: "Add",
+          onConfirm: onAdd,
+          isCategory: false
+        );
+      },
       child: CustomPaint(
         painter: CreateCardPainter(),
         child: Container(
@@ -130,7 +151,7 @@ class AddItemButton extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                "Add New Item",
+                title,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:item_tracker/CreateCardPainter.dart';
+import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/category_screen.dart';
 import 'package:item_tracker/constant.dart';
+import 'package:item_tracker/showDialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Category(name: "Book", children: ["One Piece", "Naruto", "Dragonball"]),
     Category(name: "Model", children: ["Luffy Gear 4th"]),
     Category(name: "Lego", children: []),
-    // Category(name: "Snack", children: ["Lays"]),
   ];
 
   @override
@@ -53,8 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
           childAspectRatio: 2,
           children: [
             AddCategoryButton(
-              onTap: () {
-                // Handle add new category
+              title: "Add New Category",
+              onAdd: (newName) {
+                setState(() {
+                  final newCategory = Category(name: newName, children: []);
+                  categories.insert(0, newCategory);
+                });
               },
             ),
             ...categories.map((category) {
@@ -121,14 +127,28 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class AddCategoryButton extends StatelessWidget {
-  final VoidCallback? onTap;
+  const AddCategoryButton({
+    super.key,
+    required this.title,
+    required this.onAdd,
+  });
 
-  const AddCategoryButton({super.key, this.onTap});
+  final String title;
+  final ValueChanged<String> onAdd;
+  final maxNameLength = 10;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        showTextFieldDialog(
+          context: context,
+          title: title,
+          confirmLabel: "Add",
+          onConfirm: onAdd,
+          isCategory: true,
+        );
+      },
       child: CustomPaint(
         painter: CreateCardPainter(),
         child: Container(
@@ -147,7 +167,7 @@ class AddCategoryButton extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                "Add New Category",
+                title,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -182,100 +202,13 @@ class RenameCategoryButton extends StatelessWidget {
         height: 30,
       ),
       onPressed: () {
-        final TextEditingController controller = TextEditingController(text: oldName);
-        final ValueNotifier<String?> errorText = ValueNotifier(null);
-
-        showDialog(
+        showTextFieldDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: weakOrangeColor,
-            contentPadding: const EdgeInsets.all(24),
-            content: SizedBox(
-              width: 400,
-              child: ValueListenableBuilder<String?>(
-                valueListenable: errorText,
-                builder: (context, error, _) => Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Rename category '$oldName'",
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: brownColor,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: controller,
-                      maxLength: maxNameLength,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: "Enter new category name",
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        counterText: "",
-                        errorText: error,
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: brownColor,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          ),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: brownColor,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        TextButton(
-                          onPressed: () {
-                            final newName = controller.text.trim();
-                            final valid = RegExp(r'^[a-zA-Z0-9_-]{1,10}$');
-
-                            if (newName.isEmpty) {
-                              errorText.value = "Name can't be empty";
-                            } else if (!valid.hasMatch(newName)) {
-                              errorText.value = "Only letters, numbers, - and _ allowed (max $maxNameLength)";
-                            } else {
-                              onRename(newName);
-                              Navigator.pop(context);
-                            }
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          ),
-                          child: const Text(
-                            "Rename",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: orangeColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          title: "Rename category '$oldName'",
+          initialValue: oldName,
+          confirmLabel: "Rename",
+          onConfirm: onRename,
+          isCategory: true,
         );
       },
     );
