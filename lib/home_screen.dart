@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:item_tracker/AddItemButton.dart';
 import 'package:item_tracker/CreateCardPainter.dart';
 import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/category_screen.dart';
@@ -47,81 +48,109 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 16,
-          childAspectRatio: 2,
+        padding: const EdgeInsets.all(16),
+        child: Column(
           children: [
-            AddCategoryButton(
+            // AddCategoryButton(
+            //   title: "Add New Category",
+            //   onAdd: (newName) {
+            //     setState(() {
+            //       categories.insert(0, Category(name: newName, children: []));
+            //     });
+            //   },
+            // ),
+            AddItemButton(
               title: "Add New Category",
               onAdd: (newName) {
                 setState(() {
-                  final newCategory = Category(name: newName, children: []);
-                  categories.insert(0, newCategory);
+                  categories.insert(0, Category(name: newName, children: []));
                 });
               },
             ),
-            ...categories.map((category) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CategoryScreen(category: category),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ReorderableListView.builder(
+                itemCount: categories.length,
+                buildDefaultDragHandles: false,
+                proxyDecorator: (child, index, animation) {
+                  return Material(
+                    color: Colors.transparent,
+                    elevation: 16,
+                    child: child,
+                  );
+                },
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return Card(
+                    key: ValueKey(category.name),
+                    color: creamColor,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ).then((_) {
-                    setState(() {});
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryScreen(category: category),
+                        ),
+                      ).then((_) => setState(() {})),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          children: [
+                            ReorderableDragStartListener(
+                              index: index,
+                              child: const Icon(
+                                Icons.drag_handle,
+                                color: brownColor,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                category.name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: brownColor,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            RenameCategoryButton(
+                              oldName: category.name,
+                              onRename: (newName) {
+                                setState(() => category.name = newName);
+                              },
+                            ),
+                            DeleteButton(
+                              title: "Delete Category",
+                              itemToDelete: category.name,
+                              onTap: () {
+                                setState(() => categories.removeAt(index));
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) newIndex -= 1;
+                    final moved = categories.removeAt(oldIndex);
+                    categories.insert(newIndex, moved);
                   });
                 },
-                child: Card(
-                  color: creamColor,
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            category.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: brownColor,
-                            ),
-                          ),
-                        ),
-                        RenameCategoryButton(
-                          oldName: category.name,
-                          onRename: (newName) {
-                            setState(() {
-                              category.name = newName;
-                            });
-                          },
-                        ),
-                        DeleteButton(
-                          title: "Delete Category",
-                          itemToDelete: category.name,
-                          onTap: () {
-                            setState(() {
-                              categories.remove(category);
-                            });
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
+              ),
+            ),
           ],
         ),
       ),
+
     );
   }
 }
