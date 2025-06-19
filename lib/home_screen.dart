@@ -18,12 +18,39 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Category> categories = [
-    Category(name: "Game", children: ["Stellar Blade", "Elden Ring"]),
-    Category(name: "Sport", children: ["Badminton racket"]),
-    Category(name: "Book", children: ["One Piece", "Naruto", "Dragonball"]),
-    Category(name: "Model", children: ["Luffy Gear 4th"]),
-    Category(name: "Lego", children: []),
+    Category(
+      name: "Game",
+      children: [
+        CategoryItem(name: "Stellar Blade", icon: Icons.star_border_outlined),
+        CategoryItem(name: "Elden Ring", icon: Icons.star_border_outlined),
+      ],
+    ),
+    Category(
+      name: "Sport",
+      children: [
+        CategoryItem(name: "Badminton racket", icon: Icons.star_border_outlined),
+      ],
+    ),
+    Category(
+      name: "Book",
+      children: [
+        CategoryItem(name: "One Piece", icon: Icons.star_border_outlined),
+        CategoryItem(name: "Naruto", icon: Icons.star_border_outlined),
+        CategoryItem(name: "Dragonball", icon: Icons.star_border_outlined),
+      ],
+    ),
+    Category(
+      name: "Model",
+      children: [
+        CategoryItem(name: "Luffy Gear 4th", icon: Icons.star_border_outlined),
+      ],
+    ),
+    Category(
+      name: "Lego",
+      children: [],
+    ),
   ];
+
 
   Future<void> saveCategories() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -79,14 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // AddCategoryButton(
-            //   title: "Add New Category",
-            //   onAdd: (newName) {
-            //     setState(() {
-            //       categories.insert(0, Category(name: newName, children: []));
-            //     });
-            //   },
-            // ),
             AddItemButton(
               title: "Add New Category",
               onAdd: (newName) {

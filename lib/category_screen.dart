@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:item_tracker/AddItemButton.dart';
-import 'package:item_tracker/CreateCardPainter.dart';
 import 'package:item_tracker/DeleteButton.dart';
 import 'package:item_tracker/constant.dart';
-import 'package:item_tracker/showTextFieldDialog.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({
@@ -18,7 +16,7 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  late List<String> children;
+  late List<CategoryItem> children;
 
   @override
   void initState() {
@@ -53,8 +51,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
               title: "Add New Item",
               onAdd: (newName) {
                 setState(() {
-                  children.insert(0, newName);
-                  widget.category.children.insert(0, newName);
+                  children.insert(0, CategoryItem(name: newName, icon: Icons.star_border_outlined));
+                  widget.category.children.insert(0, CategoryItem(name: newName, icon: Icons.star_border_outlined));
                 });
               },
               isCategory: false,
@@ -92,9 +90,27 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             ),
                           ),
                           const SizedBox(width: 8),
+                          IconButton(
+                            icon: Icon(item.icon, color: brownColor),
+                            onPressed: () async {
+                              final IconData? selectedIcon = await showDialog<IconData>(
+                                context: context,
+                                builder: (context) => IconPickerDialog(currentIcon: item.icon),
+                              );
+
+                              if (selectedIcon != null) {
+                                setState(() {
+                                  children[index] = CategoryItem(name: item.name, icon: selectedIcon);
+                                  widget.category.children[index] =
+                                      CategoryItem(name: item.name, icon: selectedIcon);
+                                });
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              item,
+                              item.name,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
@@ -104,7 +120,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           ),
                           DeleteButton(
                             title: "Delete Item",
-                            itemToDelete: item,
+                            itemToDelete: item.name,
                             onTap: () {
                               setState(() {
                                 children.removeAt(index);
@@ -137,3 +153,69 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 }
 
+class IconPickerDialog extends StatelessWidget {
+  final IconData currentIcon;
+
+  const IconPickerDialog({super.key, required this.currentIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    final icons = <IconData>[
+      Icons.star_border_outlined,
+      Icons.star,
+      Icons.check_circle,
+      Icons.hourglass_empty,
+      Icons.archive,
+      Icons.label,
+      Icons.shopping_cart,
+      Icons.work,
+    ];
+
+    return AlertDialog(
+      backgroundColor: creamColor,
+      title: Text(
+        "Pick an Icon",
+        style: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: brownColor
+        )
+      ),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: GridView.builder(
+          shrinkWrap: true,
+          itemCount: icons.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+          ),
+          itemBuilder: (context, index) {
+            final icon = icons[index];
+            return IconButton(
+              icon: Icon(
+                icon,
+                color: icon == currentIcon ? orangeColor : brownColor,
+              ),
+              onPressed: () => Navigator.pop(context, icon),
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), // Simply closes the dialog
+          child: const Text(
+            "Cancel",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: brownColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
